@@ -1,0 +1,31 @@
+<div class="flex-col items-center">
+    <div class="flex items-center justify-center ">
+        <h1 class="text-2xl  font-bold text-gray-800">Upload Flask Repo</h1>
+    </div>
+    <div class="flex items-center mt-10 w-full justify-center ">
+        <button class="w-1/2 mt-10 px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-900 transition">Connect to GitHub</button>
+    </div>
+    <div class="flex items-center mt-10 w-full justify-center ">
+        <button id="folder-input" class="w-1/2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">Upload Flask Repo </button>
+        <input type="file" id="get-folder" webkitdirectory directory multiple style="display: none;" />
+
+    </div>
+
+</div>
+
+<script>
+    const folderinput = document.getElementById('folder-input');
+    const getfolder = document.getElementById('get-folder');
+    folderinput.addEventListener("click",()=>{
+        getfolder.click();
+        
+    })
+    getfolder.addEventListener("change", (event) => {
+        const files = event.target.files;
+        const folderName = files[0].webkitRelativePath.split('/')[0];
+        console.log(files);
+    });
+    
+
+</script>
+
