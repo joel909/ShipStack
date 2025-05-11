@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request,render_template,g,redirect,url_for,send_from_directory
+from flask import Flask, jsonify, request,render_template,g,redirect,url_for,send_from_directory,json,make_response
 import redis
 from flask_cors import CORS
 #redis config 
@@ -68,16 +68,48 @@ def login():
             user_data = redis_client.hgetall(email)
             print(user_data)
             if user_data == {} :
-                return jsonify({"message": "Invalid Email ID or Password"}), 401
+                return jsonify({"message": "Invalid email or password. Please try again."}), 401
             elif user_data['password'] != password:
-                return jsonify({"message": "Invalid Email ID or Password"}), 401
+                return jsonify({"message": "Invalid email or password. Please try again."}), 401
             elif user_data['password'] == password:
-                return jsonify({"message": "Login successful"}), 200
+                response = make_response(jsonify({"message": "Login successful"}), 200)
+                response.set_cookie("email", email)
+                response.set_cookie("user_type", user_data['user_type'])
+                return response
             else:
                 return jsonify({"message": "Internal Server Error"}), 500
     except Exception as e:
         print(e)
         return jsonify({"message": "Internal Server Error","error":str(e)}), 500
+    
+@app.route('/api/auth/signup', methods=['POST'])
+def signup():
+    try:
+        data = request.get_json()
+        print(data)
+        email = data.get('email')
+        password = data.get('password')
+        if email == None or password == None or email == "" or password == "":
+            return jsonify({"message": "Email and password are required either is missing"}), 400
+        else:
+            user_data = redis_client.hgetall(email)
+            print(user_data)
+            if user_data != {} :
+                return jsonify({"message": "User already exists"}), 409
+            else:
+                redis_client.hset(email, "email",email)
+                redis_client.hset(email, "password",  password)
+                redis_client.hset(email, "deployment", json.dumps({})) 
+                redis_client.hset(email, "user_type", "default")
+                repsone = make_response(jsonify({"message": "User created successfully"}), 200)
+                repsone.set_cookie("email", email)
+                repsone.set_cookie("user_type", "default")
+                return repsone
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Internal Server Error","error":str(e)}), 500
+    
+    
     
     
 @app.route('/api/upload/flask', methods=['POST'])
