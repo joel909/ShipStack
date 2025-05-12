@@ -13,41 +13,51 @@ redis_client = redis.Redis(
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024 
 
-no_auth_endpoints = ["login_user"]
-# @app.before_request
-# def before_request_cd():
-#     g.route_name = request.endpoint
-#     g.user_id = request.cookies.get("user_id")
-#     g.user_role = request.cookies.get("user_role")
-#     if g.route_name in no_auth_endpoints:
-#         pass
-#     else:
-#         message = redis_client.hgetall("abc@gmail.com")
-#         print(message)
-#         if g.user_id is None:
-#             return redirect(url_for('login_user'))
-#         if g.user_role is None:
-#             return redirect(url_for('login_user'))
-#         else:1``
-#             message = redis_client.hgetall("abc@gmail.com")
-#             print(message)
+auth_endpoints = ["home"]
+@app.before_request
+def before_request_cd():
+    g.route_name = request.endpoint
+    g.request_method = request.method
+    g.email = request.cookies.get("email")
+    g.user_type = request.cookies.get("user_type")
+    print("req method",g.request_method,"route name",g.route_name)
+    if g.route_name not in auth_endpoints and g.request_method == "GET":
+        if g.email is not None and g.user_type is not None and g.route_name != "static":
+            return redirect(url_for('home'))
+        elif  g.route_name == "static":
+            print("static route accessed")
+            pass
+        else:
+            print("auth required for route",g.route_name)
+    else:
+        #print("auth required for route",g.route_name)
+        print("auth required for route",g.route_name)
+        message = redis_client.hgetall(g.email)
+        if g.email is None:
+            return redirect(url_for('login_user'))
+        if g.user_type is None:
+            return redirect(url_for('login_user'))
+        else:
+            message = redis_client.hgetall(g.email)
+            #print("user is logged in and data is",message)
 
     
 
 
+###PAGES########
 
-@app.route('/')
+@app.route('/dashboard')
 def home():
-    return render_template('index.html')
+    return render_template('web_pages/dashboard.html')
 
 @app.route('/signup')
 def signup_user():
-    return render_template('page_divisions/sign_up.html')
+    return render_template('web_pages/sign_up.html')
 
 
 @app.route("/login")
 def login_user():
-    return render_template('page_divisions/login.html')
+    return render_template('web_pages/login.html')
 
 
 
