@@ -14,32 +14,53 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024 
 
 auth_endpoints = ["home"]
+non_auth_endpoints = ["login_user","signup_user"] 
+api_endpoints = ["login","signup","static"]
 @app.before_request
-def before_request_cd():
+def before_request_cd():    
     g.route_name = request.endpoint
     g.request_method = request.method
     g.email = request.cookies.get("email")
     g.user_type = request.cookies.get("user_type")
-    print("req method",g.request_method,"route name",g.route_name)
-    if g.route_name not in auth_endpoints and g.request_method == "GET":
-        if g.email is not None and g.user_type is not None and g.route_name != "static":
+    if g.route_name in auth_endpoints:
+        print("auth route accessed")
+        print("email",g.email,"usertype",g.user_type,"route name",g.route_name,g.route_name != "home")
+        if g.email is not None and g.user_type is not None and g.route_name != "home":
             return redirect(url_for('home'))
-        elif  g.route_name == "static":
-            print("static route accessed")
+        elif g.email is None or g.user_type is None and g.route_name == "home":
+            return redirect(url_for('login_user'))
+        else:
             pass
-        else:
-            print("auth required for route",g.route_name)
-    else:
-        #print("auth required for route",g.route_name)
-        print("auth required for route",g.route_name)
-        message = redis_client.hgetall(g.email)
-        if g.email is None:
-            return redirect(url_for('login_user'))
-        if g.user_type is None:
-            return redirect(url_for('login_user'))
-        else:
-            message = redis_client.hgetall(g.email)
-            #print("user is logged in and data is",message)
+    elif g.route_name in non_auth_endpoints:
+        if g.email is not None and g.user_type is not None and g.route_name != "home":
+            print("non auth route accessed")
+            return redirect(url_for('home'))
+        
+
+    # print("req method",g.request_method,"route name",g.route_name)
+    # if g.route_name not in auth_endpoints and g.request_method == "GET":
+    #     if g.email is not None and g.user_type is not None and g.route_name != "static":
+    #         return redirect(url_for('home'))
+    #     elif  g.route_name == "static":
+    #         print("static route accessed")
+    #         pass
+    #     else:
+    #         print("auth required for route",g.route_name)
+    # else:
+    #     #print("auth required for route",g.route_name)
+    #     print("auth required for route",g.route_name)
+    #     message = redis_client.hgetall(g.email)
+    #     if g.email is None:
+    #         return redirect(url_for('login_user'))
+    #     if g.user_type is None:
+    #         return redirect(url_for('login_user'))
+    #     elif g.route_name  in api_endpoints:
+            
+    #         #print("user is logged in and data is",message)
+    #     else:
+    #         print("page  accessed")
+    #         message = redis_client.hgetall(g.email)
+            
 
     
 
