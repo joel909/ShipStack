@@ -80,6 +80,10 @@ def signup_user():
 def login_user():
     return render_template('web_pages/login.html')
 
+@app.route('/project/new/deployment')
+def new_deployment_page():
+    return render_template('web_pages/deployment_page.html')
+
 
 
 
