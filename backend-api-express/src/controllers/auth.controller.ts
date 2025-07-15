@@ -12,7 +12,7 @@ export async function signUpNewUser(email:string, password:string, name:string) 
     try{
         const requestUserCreation = await signUpUser(email, password, name)
         return createResponse(true, 200,"User created successfully", requestUserCreation.data);
-    }catch (error) {
-        return createResponse(false,200, "Error creating user", error);
+    }catch (error :any) {
+        return createResponse(false,422, "Error creating user", error.message);
     }
 }

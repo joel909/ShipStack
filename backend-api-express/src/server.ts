@@ -1,7 +1,6 @@
 import app from "./app";
 import 'dotenv/config';
-
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8000;
 
 //console.log(process.env.SUPABASE_URL);
 
