@@ -137,7 +137,7 @@ export default function SignupSection() {
                         </div>
                     </div>
                     <p className="text-sm font-light text-black dark:text-black">
-                        Already have an account? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</a>
+                        Already have an account? <a href="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</a>
                     </p>
                 </form>
             </div>

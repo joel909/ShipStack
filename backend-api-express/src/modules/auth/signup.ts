@@ -1,5 +1,5 @@
 import { supabaseAuth } from "../supabase.config";
-export default async function signUpUser(email: string, password: string,name: string) {
+export default async function signUpUser(supabaseAuth:any, email: string, password: string,name: string) {
     const {data,error} = await supabaseAuth.signUp({
         email: email,
         password: password,
