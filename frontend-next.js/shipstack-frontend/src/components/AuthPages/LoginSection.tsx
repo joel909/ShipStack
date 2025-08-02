@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import ErrorMessageModalV1 from './ErrorMessageModal';
 import LoginUserWithEmailIdPassword from '../../libs/auth/login';
-
+import StoreData from '../../libs/storage-wrapper/storage';
 export default function LoginSection() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -18,6 +18,16 @@ export default function LoginSection() {
             const request = await LoginUserWithEmailIdPassword(email, password);
             if (request.success){
                 console.log("Login successful:", request.data);
+                try {
+                    StoreData("user", request.data);
+                    StoreData("access_token", request.data.access_token);
+                    StoreData("refresh_token", request.data.refresh_token);
+                    window.location.href = "/dashboard";
+                }catch (error) {
+                    console.error("Error storing data:", error);
+                    setError("Failed to store user data. Please try again.");
+                    setErrorMessageModalShown(true);
+                }
             }
             else{
                 throw new Error(request.message || 'Login failed');

@@ -8,5 +8,6 @@ export default async function loginUserWithEmailIdPassword(supabaseAuth:any,emai
     if (error) {
         throw new Error(error.message);
     }
-    return {success: true, data: data.user};
+
+    return {success: true, data: data};
 }
